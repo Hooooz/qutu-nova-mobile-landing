@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const isGitHubPages = process.env.GITHUB_PAGES === "true";
+const isGitHubPages = process.env.QUTU_GITHUB_PAGES === "true";
 const [repositoryOwner, repositoryName] = (
   process.env.GITHUB_REPOSITORY ?? "Hooooz/qutu-nova-mobile-landing"
 ).split("/");
