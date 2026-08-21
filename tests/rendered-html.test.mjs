@@ -1,0 +1,93 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+
+async function render(path = "/") {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}-${path}`);
+  const { default: worker } = await import(workerUrl.href);
+
+  return worker.fetch(
+    new Request(`http://localhost${path}`, {
+      headers: { accept: "text/html" },
+    }),
+    {
+      ASSETS: {
+        fetch: async () => new Response("Not found", { status: 404 }),
+      },
+    },
+    {
+      waitUntil() {},
+      passThroughOnException() {},
+    },
+  );
+}
+
+test("server-renders the Salad wallpaper landing page", async () => {
+  const response = await render("/");
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
+
+  const html = await response.text();
+  assert.match(html, /<title>沙拉壁纸/);
+  assert.match(html, /class="sl-stage"/);
+  assert.doesNotMatch(html, /codex-preview|Building your site/);
+});
+
+test("page keeps a single Salad brand identity with the new logo", async () => {
+  const html = await (await render("/")).text();
+
+  assert.match(html, /沙拉壁纸/);
+  assert.match(html, /salad-icon\.png/);
+  assert.doesNotMatch(html, /趣图新境|趣图壁纸/);
+  assert.doesNotMatch(html, /qutu-nova-app-icon|cat-app-icon-v2|cat-campaign-backdrop/);
+});
+
+test("hero is a left-center-right rotating trio, no thumbnail controls", async () => {
+  const html = await (await render("/")).text();
+
+  assert.match(html, /class="sl-hero" role="group"/);
+  const tiles = html.match(/class="sl-tile sl-pos-\d"/g) ?? [];
+  assert.equal(tiles.length, 3);
+  assert.match(html, /sl-pos-0/);
+  assert.match(html, /sl-pos-1/);
+  assert.match(html, /sl-pos-2/);
+  assert.doesNotMatch(html, /lp-dot|lp-picker|campaign-thumbs|role="tablist"/);
+});
+
+test("conversion path is a single CTA without download link or ICP footer for now", async () => {
+  const html = await (await render("/")).text();
+
+  // 下载链接暂缓配置：CTA 渲染为纯按钮，不产生任何页内跳转
+  assert.match(html, /<button class="sl-cta" type="button">立即下载<\/button>/);
+  assert.doesNotMatch(html, /href="#download"|id="download"/);
+  assert.match(html, /立即下载/);
+  assert.doesNotMatch(html, /备案|ICP|NEXT_PUBLIC_ICP/);
+  assert.doesNotMatch(html, /免费|4K|动态壁纸|一键设置/);
+});
+
+test("theme routes render scenery and anime selling points", async () => {
+  const scenery = await render("/t/scenery");
+  assert.equal(scenery.status, 200);
+  const sceneryHtml = await scenery.text();
+  assert.match(sceneryHtml, /把山河湖海，装进你的手机/);
+  assert.match(sceneryHtml, /雪山镜湖|橘子海|雾光森林/);
+
+  const anime = await render("/t/anime");
+  assert.equal(anime.status, 200);
+  const animeHtml = await anime.text();
+  assert.match(animeHtml, /让喜欢的画面，住进你的屏幕/);
+  assert.match(animeHtml, /云端鲸鱼|暮色天台|樱花铁道/);
+});
+
+test("unknown theme id falls back to not-found", async () => {
+  const response = await render("/t/unknown-theme");
+  assert.notEqual(response.status, 200);
+});
+
+test("theme nav links all three landing variants", async () => {
+  const html = await (await render("/")).text();
+
+  assert.match(html, /href="\/t\/scenery"/);
+  assert.match(html, /href="\/t\/anime"/);
+  assert.match(html, /aria-current="page"/);
+});
