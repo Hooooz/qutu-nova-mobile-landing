@@ -54,15 +54,24 @@ test("hero is a left-center-right rotating trio, no thumbnail controls", async (
   assert.doesNotMatch(html, /lp-dot|lp-picker|campaign-thumbs|role="tablist"/);
 });
 
-test("conversion path is a single CTA without download link or ICP footer for now", async () => {
+test("conversion path links the CTA directly to the Android release", async () => {
   const html = await (await render("/")).text();
 
-  // 下载链接暂缓配置：CTA 渲染为纯按钮，不产生任何页内跳转
-  assert.match(html, /<button class="sl-cta" type="button">立即下载<\/button>/);
-  assert.doesNotMatch(html, /href="#download"|id="download"/);
-  assert.match(html, /立即下载/);
+  assert.match(
+    html,
+    /<a class="sl-cta" href="https:\/\/github\.com\/Hooooz\/qutu-nova-mobile-landing\/releases\/download\/android-v0\.1\.0\/app-release\.apk">立即下载<\/a>/,
+  );
+  assert.equal((html.match(/class="sl-cta"/g) ?? []).length, 1);
+  assert.doesNotMatch(html, /<button class="sl-cta"/);
   assert.doesNotMatch(html, /备案|ICP|NEXT_PUBLIC_ICP/);
   assert.doesNotMatch(html, /免费|4K|动态壁纸|一键设置/);
+});
+
+test("download proof identifies the APK as Android-only", async () => {
+  const html = await (await render("/")).text();
+
+  assert.match(html, /Android 安装包 · 版本 0\.1\.0/);
+  assert.doesNotMatch(html, /iPhone/);
 });
 
 test("theme routes render scenery and anime selling points", async () => {

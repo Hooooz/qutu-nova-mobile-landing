@@ -110,7 +110,7 @@ export function SaladCampaign({ theme }: { theme: Theme }) {
           </button>
         )}
 
-        <p className="sl-proof">Android · iPhone 均可使用</p>
+        <p className="sl-proof">Android 安装包 · 版本 0.1.0</p>
 
         <nav className="sl-themes" aria-label="更多主题落地页">
           {themeIds.map((id) => (

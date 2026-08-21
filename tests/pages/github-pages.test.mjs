@@ -48,6 +48,16 @@ test("uses the GitHub repository base path for navigation and assets", async () 
   }
 });
 
+test("exports the CTA as a direct Android release download", async () => {
+  const homepage = await html("index.html");
+
+  assert.match(
+    homepage,
+    /<a class="sl-cta" href="https:\/\/github\.com\/Hooooz\/qutu-nova-mobile-landing\/releases\/download\/android-v0\.1\.0\/app-release\.apk">立即下载<\/a>/,
+  );
+  assert.doesNotMatch(homepage, /<button class="sl-cta"/);
+});
+
 test("keeps GitHub Pages from applying Jekyll processing", async () => {
   assert.equal(await exists(".nojekyll"), true, ".nojekyll is missing from the publish artifact");
 });
