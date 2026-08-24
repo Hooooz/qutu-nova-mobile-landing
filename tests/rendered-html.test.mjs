@@ -59,7 +59,7 @@ test("conversion path links the CTA directly to the Android release", async () =
 
   assert.match(
     html,
-    /<a class="sl-cta" href="https:\/\/github\.com\/Hooooz\/qutu-nova-mobile-landing\/releases\/download\/android-v0\.1\.0\/app-release\.apk">立即下载<\/a>/,
+    /<a class="sl-cta" href="https:\/\/github\.com\/Hooooz\/qutu-nova-mobile-landing\/releases\/download\/android-v0\.2\.0\/app-release\.apk">立即下载<\/a>/,
   );
   assert.equal((html.match(/class="sl-cta"/g) ?? []).length, 1);
   assert.doesNotMatch(html, /<button class="sl-cta"/);
@@ -67,10 +67,14 @@ test("conversion path links the CTA directly to the Android release", async () =
   assert.doesNotMatch(html, /免费|4K|动态壁纸|一键设置/);
 });
 
-test("download proof identifies the APK as Android-only", async () => {
+test("download proof identifies the APK as Android-only and keeps the legacy release linked", async () => {
   const html = await (await render("/")).text();
 
-  assert.match(html, /Android 安装包 · 版本 0\.1\.0/);
+  assert.match(html, /Android 安装包 · 最新版本 0\.2\.0/);
+  assert.match(
+    html,
+    /<a class="sl-legacy" href="https:\/\/github\.com\/Hooooz\/qutu-nova-mobile-landing\/releases\/download\/android-v0\.1\.0\/app-release\.apk">旧版本 0\.1\.0 下载<\/a>/,
+  );
   assert.doesNotMatch(html, /iPhone/);
 });
 

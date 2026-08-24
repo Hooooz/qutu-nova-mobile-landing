@@ -11,6 +11,9 @@ const publicSiteUrl = isGitHubPages
     "https://qutu-nova-mobile-landing.qutu-nova.workers.dev";
 const appDownloadUrl =
   process.env.NEXT_PUBLIC_APP_DOWNLOAD_URL?.trim() ||
+  "https://github.com/Hooooz/qutu-nova-mobile-landing/releases/download/android-v0.2.0/app-release.apk";
+const appDownloadLegacyUrl =
+  process.env.NEXT_PUBLIC_APP_DOWNLOAD_LEGACY_URL?.trim() ||
   "https://github.com/Hooooz/qutu-nova-mobile-landing/releases/download/android-v0.1.0/app-release.apk";
 
 const nextConfig: NextConfig = {
@@ -25,6 +28,7 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_BASE_PATH: basePath,
     NEXT_PUBLIC_SITE_URL: publicSiteUrl,
     NEXT_PUBLIC_APP_DOWNLOAD_URL: appDownloadUrl,
+    NEXT_PUBLIC_APP_DOWNLOAD_LEGACY_URL: appDownloadLegacyUrl,
   },
 };
 

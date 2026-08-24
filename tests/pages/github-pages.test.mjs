@@ -53,9 +53,13 @@ test("exports the CTA as a direct Android release download", async () => {
 
   assert.match(
     homepage,
-    /<a class="sl-cta" href="https:\/\/github\.com\/Hooooz\/qutu-nova-mobile-landing\/releases\/download\/android-v0\.1\.0\/app-release\.apk">立即下载<\/a>/,
+    /<a class="sl-cta" href="https:\/\/github\.com\/Hooooz\/qutu-nova-mobile-landing\/releases\/download\/android-v0\.2\.0\/app-release\.apk">立即下载<\/a>/,
   );
   assert.doesNotMatch(homepage, /<button class="sl-cta"/);
+  assert.match(
+    homepage,
+    /<a class="sl-legacy" href="https:\/\/github\.com\/Hooooz\/qutu-nova-mobile-landing\/releases\/download\/android-v0\.1\.0\/app-release\.apk">旧版本 0\.1\.0 下载<\/a>/,
+  );
 });
 
 test("keeps GitHub Pages from applying Jekyll processing", async () => {

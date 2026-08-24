@@ -6,6 +6,8 @@ import { siteBasePath, siteRoute, withSiteBasePath } from "./site-paths";
 import { themes, themeIds, type Theme } from "./themes";
 
 const APP_DOWNLOAD_HREF = process.env.NEXT_PUBLIC_APP_DOWNLOAD_URL?.trim() || "";
+const APP_DOWNLOAD_LEGACY_HREF =
+  process.env.NEXT_PUBLIC_APP_DOWNLOAD_LEGACY_URL?.trim() || "";
 const ROTATE_MS = 3400;
 
 export function SaladCampaign({ theme }: { theme: Theme }) {
@@ -110,7 +112,12 @@ export function SaladCampaign({ theme }: { theme: Theme }) {
           </button>
         )}
 
-        <p className="sl-proof">Android 安装包 · 版本 0.1.0</p>
+        <p className="sl-proof">Android 安装包 · 最新版本 0.2.0</p>
+        {APP_DOWNLOAD_LEGACY_HREF ? (
+          <a className="sl-legacy" href={APP_DOWNLOAD_LEGACY_HREF}>
+            旧版本 0.1.0 下载
+          </a>
+        ) : null}
 
         <nav className="sl-themes" aria-label="更多主题落地页">
           {themeIds.map((id) => (
