@@ -1,0 +1,29 @@
+# 推 android-v* tag 时，用 GITHUB_TOKEN 创建同名 Release 并把本分支的
+# app-release.apk 作为资产上传。APK 只存在于 release-assets 分支，
+# 不进 main（落地页仓库保持无二进制）；CTA 走 releases/download 标准地址。
+name: publish-release
+on:
+  push:
+    tags:
+      - "android-v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create release and upload APK asset
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -f app-release.apk
+          version="${GITHUB_REF_NAME#android-v}"
+          gh release create "$GITHUB_REF_NAME" app-release.apk \
+            --title "沙拉壁纸 Android v${version}" \
+            --notes "沙拉壁纸 Android v${version} 安装包（落地页下载资产）。" \
+            --latest
